@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class BackendService {
   static Future<List> getSuggestions(String query) async {
     await Future.delayed(Duration(seconds: 1));
@@ -13,13 +11,12 @@ class BackendService {
 }
 
 class SearchService {
-  final _firestore = FirebaseFirestore.instance;
 
   Future<List> getStudents(String suggestion) async {
-    var doc = await _firestore.collection('students').get();
+    //implement getStudents
 
-    final allStudents = doc.docs.map((doc) => doc.data()).toList();
-    return allStudents;
+    List students = [];
+    return students;
   }
 }
 

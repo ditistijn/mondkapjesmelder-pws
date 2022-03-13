@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mondkapjesmelder/logic/login/usertypes.dart';
@@ -21,13 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     return MaterialApp(
       home: Scaffold(
         body: SafeArea(
-          child: StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return PrototypeMain();
-              }
-              return Container(
+          child:Container(
                 margin: EdgeInsets.symmetric(horizontal: 18),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
 
                                   var snackBar = await SnackBar(
                                     content: Text(
-                                        '${await sendLoginData(username, password)}'),
+                                        'shank'),
                                   );
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
@@ -73,36 +66,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-              );
-            },
+              )
+           
           ),
-        ),
-      ),
-    );
+       
+    ),);
   }
-}
-
-Future sendLoginData(String _username, String _password) {
-  final email = _username +
-      '@mondkapjesmelder.nl'; // should be done using just username but firebase does not support username sign-ins yet -> https://stackoverflow.com/questions/35120939/username-authentication-instead-of-email
-  final password = _password;
-
-  return signIn(email, password);
 }
 
 Future<String> signIn(String _email, String _password) async {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: _email, password: _password);
-
-    return 'Ingelogd';
-  } on FirebaseAuthException catch (e) {
-    if (e.code == 'user-not-found') {
-      return 'Gebruiker niet gevonden.';
-    } else if (e.code == 'wrong-password') {
-      return 'Onjuist wachtwoord.';
-    } else {
-      return 'Fail: ${e.message}';
-    }
-  }
+  return 'signed in';
 }

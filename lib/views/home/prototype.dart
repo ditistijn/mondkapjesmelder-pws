@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -8,7 +5,7 @@ import 'package:mondkapjesmelder/logic/admin/greeting.dart';
 import 'package:mondkapjesmelder/logic/login/usertypes.dart';
 import 'package:mondkapjesmelder/views/admin/protoype.dart';
 
-import 'package:mondkapjesmelder/firebase_options.dart';
+
 
 import '../../logic/home/backend.dart';
 
@@ -42,8 +39,6 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
   var reportedCount = 0;
   var studentClass = '';
   var studentId = '';
-  var user = FirebaseAuth.instance.currentUser;
-  var uid = getUser();
 
   @override
   void initState() {
@@ -53,21 +48,11 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
     super.initState();
   }
 
-  final students = FirebaseFirestore.instance.collection('students');
+  final students = [];
 
   Widget build(BuildContext context) {
     void reportStudent(int studentId) async {
-      var studentRef =
-          FirebaseFirestore.instance.collection('students').doc('$studentId');
-      studentRef.update({"reportedCount": FieldValue.increment(1)});
-
-      students
-          .doc('$studentId')
-          .collection('reports')
-          .doc('${DateTime.now()}')
-          .set({"dateTime": DateTime.now(), "reportedBy": "skanker"})
-          .then((value) => print("Student Reported"))
-          .catchError((error) => print("Failed to add user: $error"));
+      //implement reportStudent
 
       setState(() {
         reportedCount++;
@@ -75,15 +60,7 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
     }
 
     void addStudent(int studentId, String firstName, String lastName) {
-      students
-          .doc('$studentId')
-          .set({
-            "firstName": firstName,
-            "lastName": lastName,
-            "reportedCount": 0,
-          })
-          .then((value) => print("Student Reported"))
-          .catchError((error) => print("Failed to add user: $error"));
+      //implement addStudent
     }
 
     void setStudentProfilePicture(suggestion) async {
@@ -120,12 +97,12 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                     style: TextStyle(color: Colors.white),
                   ),
                   Text(
-                    '${FirebaseAuth.instance.currentUser!.email!.substring(0, FirebaseAuth.instance.currentUser!.email!.length - 20)}',
+                    '', //implement wallet address
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         fontSize: 20),
-                  ) //verwijder de laatste 20 characters- @mondkapjesmelder.nl om de username te krijgen
+                  ),
                 ],
               ),
             ),
@@ -181,7 +158,7 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                       CupertinoActionSheetAction(
                         child: const Text('Bevestigen'),
                         onPressed: () async {
-                          FirebaseAuth.instance.signOut();
+                          //implement signOut
                           Navigator.pop(context);
                           showCupertinoDialog<void>(
                             context: context,

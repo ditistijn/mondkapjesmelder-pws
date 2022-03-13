@@ -1,9 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mondkapjesmelder/views/admin/settings.dart';
-
-import 'analytics.dart';
-import 'home.dart';
 import 'users.dart';
 
 class AdminPrototype extends StatefulWidget {
@@ -37,7 +32,7 @@ class _AdminPrototypeHomeState extends State<AdminPrototypeHome> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Mondkapjesmelder Dashboard'),
-        actions: [IconButton(onPressed: () {FirebaseAuth.instance.signOut();}, icon: Icon(Icons.logout))],
+        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.logout))],
       ),
       body: SafeArea(
         child: Container(
@@ -56,18 +51,9 @@ class _AdminPrototypeHomeState extends State<AdminPrototypeHome> {
                       label: Text("Home"),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(Icons.stacked_line_chart),
-                      label: Text("Analytics"),
-                    ),
-                    NavigationRailDestination(
                       icon: Icon(Icons.person),
                       label: Text("Users"),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.settings),
-                      label: Text("Settings"),
-                    ),
-                  
+                    ),                  
                   ],
                   selectedIndex: _selectedIndex),
               Divider(
@@ -85,8 +71,22 @@ class _AdminPrototypeHomeState extends State<AdminPrototypeHome> {
 List<Widget> getAdminWidgets() {
   return [
     Home(),
-    Analytics(),
     Users(),
-    Settings(),
   ];
+}
+
+class Home extends StatefulWidget {
+  const Home({ Key? key }) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      
+    );
+  }
 }
