@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:mondkapjesmelder/logic/admin/greeting.dart';
 import 'package:mondkapjesmelder/logic/login/usertypes.dart';
+import 'package:mondkapjesmelder/logic/web3/deets.dart';
 import 'package:mondkapjesmelder/views/admin/protoype.dart';
-
-
+import 'package:web3dart/web3dart.dart';
 
 import '../../logic/home/backend.dart';
 
@@ -40,6 +40,9 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
   var studentClass = '';
   var studentId = '';
 
+  var firstName;
+  var lastName;
+
   @override
   void initState() {
     _textController = TextEditingController(text: "");
@@ -48,32 +51,34 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
     super.initState();
   }
 
-  final students = [];
+  ///final students = [];
 
   Widget build(BuildContext context) {
-    void reportStudent(int studentId) async {
-      //implement reportStudent
+    Future reportStudent(int _studentId) async {
+      BigInt bigStudentId = BigInt.from(_studentId);
+      var dateTime = DateTime.now().toString();
+      var report = await dbInstance.reportStudent(bigStudentId, dateTime,
+          credentials: credentials);
 
       setState(() {
         reportedCount++;
       });
+
+      return report;
     }
 
     void addStudent(int studentId, String firstName, String lastName) {
       //implement addStudent
     }
 
-    void setStudentProfilePicture(suggestion) async {
-      setState(() {
-        imageUri = suggestion['profilePicture'];
-      });
-    }
-
-    void setStudentDetails(suggestion) {
-      reportedCount = suggestion['reportedCount'];
-      studentClass = '${suggestion['class']}';
-      studentId = '${suggestion['studentId']}';
-      setStudentProfilePicture(suggestion);
+    void setStudentDetails(
+        _reportedCount, _studentClass, _firstName, _lastName) {
+      reportedCount = _reportedCount;
+      studentClass = _studentClass;
+      //studentId = _studentId;
+      firstName = _firstName;
+      lastName = _lastName;
+      //imageUri = 'https://api.ipfsbrowser.com/ipfs/download.php?hash=' + _profilePic;
     }
 
     void setTextField(String data) {
@@ -93,7 +98,7 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${greetingMessage()},',
+                    '${greetingMessage()}',
                     style: TextStyle(color: Colors.white),
                   ),
                   Text(
@@ -101,14 +106,14 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontSize: 20),
+                        fontSize: 15),
                   ),
                 ],
               ),
             ),
             FutureBuilder(
               future: getUserType(),
-              initialData: false,
+              initialData: true,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -116,7 +121,7 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                       child: CircularProgressIndicator(),
                     );
                   } else {
-                    if (snapshot.data == 'admin') {
+                    
                       return ListTile(
                         title: Text('Admin omgeving'),
                         leading: Icon(Icons.admin_panel_settings),
@@ -129,9 +134,9 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                         },
                       );
                     }
-                  }
+                  
                 } else if (snapshot.hasError) {
-                  return Text('no data');
+                  return Text('${snapshot.error.toString()}');
                 }
                 return Container();
               },
@@ -139,12 +144,26 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
             ListTile(
               title: Text('Over deze app'),
               leading: Icon(Icons.info),
-              onTap: () {},
-            ),
-            ListTile(
-              title: Text('Mijn Meldingen'),
-              leading: Icon(Icons.assignment),
-              onTap: () {},
+              onTap: () {
+                showCupertinoDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) =>
+                                CupertinoAlertDialog(
+                              title: const Text('Gemaakt door de beste developers Ruben en Tijn'),
+                              
+                              actions: <CupertinoDialogAction>[
+                                CupertinoDialogAction(
+                                  child: const Text('OK'),
+                                  isDestructiveAction: false,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    // Do something destructive.
+                                  },
+                                )
+                              ],
+                            ),
+                          );
+              },
             ),
             ListTile(
               title: Text('Uitloggen'),
@@ -188,7 +207,9 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
         ),
       ),
       appBar: AppBar(
-        title: Text("Mondkapjes Melder"),
+        title: Text(firstName != null
+            ? '$firstName $lastName melden'
+            : 'Mondkapjesmelder'),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -201,42 +222,25 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      const Text("Naam of lln. number"),
+                      const Text("Lln. number"),
                       Container(
                         height: 8,
                       ),
-                      CupertinoTypeAheadField(
-                        textFieldConfiguration: CupertinoTextFieldConfiguration(
-                            controller: _textController),
-                        suggestionsCallback: (pattern) async {
-                          return await SearchService().getStudents(pattern);
-                        },
-                        itemBuilder: (context, suggestion) {
-                          final student = suggestion!;
-                          final firstName =
-                              (student as Map<String, dynamic>)['firstName'];
-                          final lastName = (student)['lastName'];
-                          final studentClass = student['class'];
-                          return Material(
-                            child: ListTile(
-                              leading: Icon(Icons.person),
-                              title: Text('$firstName $lastName'),
-                              subtitle: Text(studentClass),
-                            ),
-                          );
-                        },
-                        onSuggestionSelected: (suggestion) {
-                          final student = suggestion!;
-                          final firstName =
-                              (student as Map<String, dynamic>)['firstName'];
-                          final lastName = (student)['lastName'];
-
-                          //load user info (image class reportedCount)
+                      CupertinoTextField(
+                        controller: _textController,
+                        onEditingComplete: () async {
+                          var studentInfo = await dbInstance.getStudentInfo(
+                              BigInt.parse(_textController.text));
+                          int timesReported = studentInfo.timesReported.toInt();
                           setState(() {
-                            setStudentDetails(suggestion);
-                            setTextField('$firstName $lastName');
+                            setStudentDetails(
+                                timesReported,
+                                studentInfo.classId,
+                                studentInfo.firstName,
+                                studentInfo.lastName);
                           });
                         },
+                        keyboardType: TextInputType.number,
                       ),
                     ],
                   ),
@@ -303,7 +307,7 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                   CupertinoButton.filled(
                     child: const Text("Melding Indienen"),
                     onPressed: () {
-                      if (studentId == '') {
+                      if (_textController.text == '') {
                         showCupertinoDialog<void>(
                           context: context,
                           builder: (BuildContext context) =>
@@ -333,26 +337,58 @@ class _PrototypeHomeScreenState extends State<PrototypeHomeScreen> {
                               CupertinoActionSheetAction(
                                 child: const Text('Bevestigen'),
                                 onPressed: () async {
-                                  reportStudent(int.parse(studentId));
-                                  Navigator.pop(context);
-                                  showCupertinoDialog<void>(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        CupertinoAlertDialog(
-                                      title: const Text(
-                                          'Bedankt voor het melden!'),
-                                      actions: <CupertinoDialogAction>[
-                                        CupertinoDialogAction(
-                                          child: const Text('OK'),
-                                          isDestructiveAction: false,
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            // Do something destructive.
-                                          },
-                                        )
-                                      ],
-                                    ),
-                                  );
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          SimpleDialog(
+                                            children: [
+                                              CircularProgressIndicator()
+                                            ],
+                                          ));
+                                  await reportStudent(
+                                          int.parse(_textController.text))
+                                      .whenComplete(() {
+                                    Navigator.pop(context);
+                                    showCupertinoDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          CupertinoAlertDialog(
+                                        title: const Text(
+                                            'Bedankt voor het melden!'),
+                                        actions: <CupertinoDialogAction>[
+                                          CupertinoDialogAction(
+                                            child: const Text('OK'),
+                                            isDestructiveAction: false,
+                                            onPressed: () {
+                                              setState(() {
+                                                credentials =
+                                                    EthPrivateKey.fromHex("");
+                                              });
+                                              Navigator.pop(context);
+                                              // Do something destructive.
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }).catchError((e) {
+                                    showCupertinoDialog<void>(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            CupertinoAlertDialog(
+                                              title: Text('$e'),
+                                              actions: <CupertinoDialogAction>[
+                                                CupertinoDialogAction(
+                                                  child: const Text('OK'),
+                                                  isDestructiveAction: false,
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    // Do something destructive.
+                                                  },
+                                                )
+                                              ],
+                                            ));
+                                  });
                                 },
                               ),
                             ],

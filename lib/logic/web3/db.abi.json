@@ -1,0 +1,138 @@
+[
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "checkIfUserAdmin",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_studentId",
+				"type": "uint256"
+			}
+		],
+		"name": "getStudentInfo",
+		"outputs": [
+			{
+				"name": "firstName",
+				"type": "string"
+			},
+			{
+				"name": "lastName",
+				"type": "string"
+			},
+			{
+				"name": "classId",
+				"type": "string"
+			},
+			{
+				"name": "timesReported",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_studentId",
+				"type": "uint256"
+			}
+		],
+		"name": "getReports",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "setAdmin",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_studentId",
+				"type": "uint256"
+			},
+			{
+				"name": "_dateTime",
+				"type": "string"
+			}
+		],
+		"name": "reportStudent",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_studentId",
+				"type": "uint256"
+			},
+			{
+				"name": "_firstName",
+				"type": "string"
+			},
+			{
+				"name": "_lastName",
+				"type": "string"
+			},
+			{
+				"name": "_classId",
+				"type": "string"
+			}
+		],
+		"name": "addStudent",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getStudents",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
